@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Home | Eventify</title>
+  <script type="module" src="/scripts/firebase.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+
+  <!-- Navbar -->
+  <nav class="bg-white shadow p-4 flex justify-between items-center">
+    <div class="text-2xl font-bold">Eventify</div>
+    <ul class="flex space-x-6 items-center">
+      <li><a href="index.html" class="hover:underline">Home</a></li>
+      <li><a href="about.html" class="hover:underline">About</a></li>
+      <li><a href="events.html" class="hover:underline">Events</a></li>
+      <li><a href="create-event.html" class="hover:underline">Create Event</a></li>
+
+      <li id="userDisplay" class="text-gray-700 font-semibold"></li>
+
+      <li><a href="login.html" id="loginLink" class="hover:underline">Login</a></li>
+      <li><a href="register.html" id="registerLink" class="hover:underline">Register</a></li>
+
+      <li>
+        <button id="logoutBtn" class="hidden text-red-600 hover:underline">Logout</button>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="flex-grow container mx-auto p-6">
+    <h1 class="text-4xl font-bold mb-6 text-center">Welcome to Eventify!</h1>
+    <p class="text-center mb-8 text-lg text-gray-700">
+      Explore and share exciting events happening around you.
+    </p>
+
+    <section>
+      <h2 class="text-2xl font-semibold mb-4">Upcoming Events</h2>
+
+      <div id="eventsList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <p class="text-gray-500 col-span-full text-center">Loading events...</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- Firebase Logic -->
+  <script type="module">
+    import { auth, db } from './scripts/firebase.js';
+    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+    import { doc, getDoc, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+
+    const userDisplay = document.getElementById('userDisplay');
+    const loginLink = document.getElementById('loginLink');
+    const registerLink = document.getElementById('registerLink');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const eventsList = document.getElementById('eventsList');
+
+    // Check auth state and display user info
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        loginLink.style.display = 'none';
+        registerLink.style.display = 'none';
+        logoutBtn.classList.remove('hidden');
+
+        try {
+          const docRef = doc(db, 'users', user.uid);
+          const docSnap = await getDoc(docRef);
+
+          if (docSnap.exists()) {
+            const userData = docSnap.data();
+            const name = userData.firstName || user.email;
+            userDisplay.textContent = `Hello, ${name}`;
+          } else {
+            userDisplay.textContent = `Hello, ${user.name}`;
+          }
+        } catch (error) {
+          userDisplay.textContent = `Hello, ${user.name}`;
+        }
+      } else {
+        userDisplay.textContent = '';
+        loginLink.style.display = 'inline';
+        registerLink.style.display = 'inline';
+        logoutBtn.classList.add('hidden');
+      }
+    });
+
+    // Handle logout
+    logoutBtn.addEventListener('click', async () => {
+      await signOut(auth);
+      window.location.href = 'login.html';
+    });
+
+    // Fetch events from Firestore
+    async function fetchEvents() {
+      try {
+        const q = query(collection(db, 'events'), orderBy('date', 'asc'));
+        const querySnapshot = await getDocs(q);
+
+        if (querySnapshot.empty) {
+          eventsList.innerHTML = '<p class="col-span-full text-center text-gray-500">No events available.</p>';
+          return;
+        }
+
+        eventsList.innerHTML = '';
+
+        querySnapshot.forEach((doc) => {
+          const event = doc.data();
+          const eventDate = event?.date?.seconds ? new Date(event.date.seconds * 1000) : null;
+          const formattedDate = eventDate ? eventDate.toLocaleDateString() : 'No date';
+
+          const eventCard = document.createElement('div');
+          eventCard.className = 'bg-white rounded-lg shadow p-4 flex flex-col';
+
+          eventCard.innerHTML = `
+            <img src="${event.imageUrl || 'https://via.placeholder.com/400x200?text=No+Image'}" alt="${event.title}" class="rounded-md mb-4 object-cover h-48 w-full" />
+            <h3 class="text-xl font-semibold mb-2">${event.title || 'No Title'}</h3>
+            <p class="text-gray-600 mb-1"><strong>Date:</strong> ${formattedDate}</p>
+            <p class="text-gray-600 mb-1"><strong>Location:</strong> ${event.location || 'Unknown'}</p>
+            <p class="text-gray-700 flex-grow">${event.description?.substring(0, 100) || 'No description'}...</p>
+            <a href="event-details.html?id=${doc.id}" class="mt-4 inline-block text-blue-600 hover:underline">View Details</a>
+          `;
+
+          eventsList.appendChild(eventCard);
+        });
+      } catch (error) {
+        eventsList.innerHTML = `<p class="col-span-full text-center text-red-500">Error loading events: ${error.message}</p>`;
+      }
+    }
+
+    // Load events when page is ready
+    fetchEvents();
+  </script>
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Create Event | Eventify</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col items-center pt-10">
+
+  <main class="bg-white p-8 rounded shadow-md w-full max-w-lg">
+    <h1 class="text-3xl font-bold mb-6 text-center">Create New Event</h1>
+
+    <form id="createEventForm" class="space-y-4">
+      <div>
+        <label for="title" class="block font-semibold mb-1">Event Title</label>
+        <input type="text" id="title" required class="w-full border border-gray-300 p-2 rounded" />
+      </div>
+
+      <div>
+        <label for="description" class="block font-semibold mb-1">Description</label>
+        <textarea id="description" rows="4" required class="w-full border border-gray-300 p-2 rounded"></textarea>
+      </div>
+
+      <div>
+        <label for="date" class="block font-semibold mb-1">Date</label>
+        <input type="date" id="date" required class="w-full border border-gray-300 p-2 rounded" />
+      </div>
+
+      <div>
+        <label for="location" class="block font-semibold mb-1">Location</label>
+        <input type="text" id="location" required class="w-full border border-gray-300 p-2 rounded" />
+      </div>
+
+      <div>
+        <label for="image" class="block font-semibold mb-1">Event Image</label>
+        <input type="file" id="image" accept="image/*" required class="w-full" />
+      </div>
+
+      <button type="submit" class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition">Create Event</button>
+    </form>
+
+    <p id="statusMsg" class="mt-4 text-center text-red-500"></p>
+  </main>
+
+  <script type="module">
+    import { auth, db, storage } from './scripts/firebase.js';
+    import {
+      ref as storageRef,
+      uploadBytes,
+      getDownloadURL
+    } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
+    import {
+      collection,
+      addDoc,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+
+    const form = document.getElementById('createEventForm');
+    const statusMsg = document.getElementById('statusMsg');
+
+    // تأكد أن المستخدم مسجل دخول
+    auth.onAuthStateChanged(user => {
+      if (!user) {
+        // لو مش مسجل دخول، ارجع للصفحة الرئيسية أو صفحة تسجيل الدخول
+        window.location.href = 'login.html';
+      }
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      statusMsg.textContent = '';
+
+      const title = form.title.value.trim();
+      const description = form.description.value.trim();
+      const date = form.date.value;
+      const location = form.location.value.trim();
+      const imageFile = form.image.files[0];
+
+      if (!imageFile) {
+        statusMsg.textContent = 'Please select an image.';
+        return;
+      }
+
+      try {
+        statusMsg.textContent = 'Uploading image...';
+
+        // رفع الصورة إلى Firebase Storage داخل مجلد "event-images"
+        const imageRef = storageRef(storage, `event-images/${Date.now()}_${imageFile.name}`);
+        await uploadBytes(imageRef, imageFile);
+
+        // الحصول على رابط الصورة بعد الرفع
+        const imageUrl = await getDownloadURL(imageRef);
+
+        statusMsg.textContent = 'Saving event data...';
+
+        // إضافة بيانات الحدث إلى Firestore
+        await addDoc(collection(db, 'events'), {
+          title,
+          description,
+          date,
+          location,
+          imageUrl,
+          createdAt: serverTimestamp(),
+          createdBy: auth.currentUser.uid
+        });
+
+        statusMsg.textContent = 'Event created successfully!';
+        form.reset();
+
+        // يمكن إعادة توجيه المستخدم لصفحة الأحداث بعد إنشاء الحدث
+        setTimeout(() => {
+          window.location.href = 'events.html';
+        }, 1500);
+
+      } catch (error) {
+        statusMsg.textContent = `Error: ${error.message}`;
+      }
+    });
+  </script>
+
+</body>
+</html>

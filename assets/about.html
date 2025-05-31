@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>About | Eventify</title>
+  <script type="module" src="/scripts/firebase.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+
+  <!-- Navbar -->
+  <nav class="bg-white shadow p-4 flex justify-between items-center">
+    <div class="text-2xl font-bold">Eventify</div>
+    <ul class="flex space-x-6 items-center">
+      <li><a href="index.html" class="hover:underline">Home</a></li>
+      <li><a href="about.html" class="underline font-semibold">About</a></li>
+      <li><a href="events.html" class="hover:underline">Events</a></li>
+      <li><a href="create-event.html" class="hover:underline">Create Event</a></li>
+      <li><a href="login.html" class="hover:underline">Login</a></li>
+      <li><a href="register.html" class="hover:underline">Register</a></li>
+    </ul>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="flex-grow container mx-auto p-6 max-w-4xl">
+    <h1 class="text-4xl font-bold mb-8 text-center text-gray-800">About Eventify</h1>
+
+    <section class="bg-white rounded-lg shadow p-6 mb-6">
+      <h2 class="text-2xl font-semibold mb-4">What is Eventify?</h2>
+      <p class="text-gray-700 leading-relaxed">
+        Eventify is a platform where students and users can explore, create, and share events happening around their community. 
+        Whether you want to find new activities, share your own event, or connect with others, Eventify makes it easy and fun.
+      </p>
+    </section>
+
+    <section class="bg-white rounded-lg shadow p-6 mb-6">
+      <h2 class="text-2xl font-semibold mb-4">Create and Share</h2>
+      <p class="text-gray-700 leading-relaxed">
+        Users can register and log in to create new events by filling out a simple form. Upload images, set event details like date and location, 
+        and share it with everyone on the platform. All events are publicly listed for others to discover.
+      </p>
+    </section>
+
+    <section class="bg-white rounded-lg shadow p-6">
+      <h2 class="text-2xl font-semibold mb-4">Join Our Community</h2>
+      <p class="text-gray-700 leading-relaxed">
+        Eventify is more than just a website — it’s a community hub for students and event enthusiasts. Stay updated, meet new people, and make the most of every event.
+      </p>
+    </section>
+  </main>
+
+</body>
+</html>
