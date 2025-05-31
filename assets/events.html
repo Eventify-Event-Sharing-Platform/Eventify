@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Events | Eventify</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+
+  <!-- Navbar -->
+  <nav class="bg-white shadow p-4 flex justify-between items-center">
+    <div class="text-2xl font-bold">Eventify</div>
+    <ul class="flex space-x-6 items-center">
+      <li><a href="index.html" class="hover:underline">Home</a></li>
+      <li><a href="about.html" class="hover:underline">About</a></li>
+      <li><a href="events.html" class="underline font-semibold">Events</a></li>
+      <li><a href="create-event.html" class="hover:underline">Create Event</a></li>
+      <li><a href="login.html" id="loginLink" class="hover:underline">Login</a></li>
+      <li><a href="register.html" id="registerLink" class="hover:underline">Register</a></li>
+      <li class="hidden" id="logoutBtn"><button class="text-red-500">Logout</button></li>
+    </ul>
+    <div id="userDisplay" class="text-gray-700 ml-4"></div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="flex-grow container mx-auto p-6 max-w-6xl">
+    <h1 class="text-4xl font-bold mb-8 text-center text-gray-800">All Events</h1>
+
+    <div id="eventsList" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <!-- Events will be loaded here -->
+    </div>
+  </main>
+
+  <script type="module">
+    import { auth, db } from './scripts/firebase.js';
+    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+    import { collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+
+    const userDisplay = document.getElementById('userDisplay');
+    const loginLink = document.getElementById('loginLink');
+    const registerLink = document.getElementById('registerLink');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const eventsList = document.getElementById('eventsList');
+
+    // Handle auth state
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        loginLink.style.display = 'none';
+        registerLink.style.display = 'none';
+        logoutBtn.classList.remove('hidden');
+
+        // Optionally get user info from Firestore if stored
+        userDisplay.textContent = `Hello, ${user.email}`;
+      } else {
+        userDisplay.textContent = '';
+        loginLink.style.display = 'inline';
+        registerLink.style.display = 'inline';
+        logoutBtn.classList.add('hidden');
+      }
+    });
+
+    logoutBtn.addEventListener('click', async () => {
+      await signOut(auth);
+      window.location.href = 'index.html';
+    });
+
+    async function fetchEvents() {
+      try {
+        const q = query(collection(db, 'events'), orderBy('date', 'asc'));
+        const querySnapshot = await getDocs(q);
+
+        if (querySnapshot.empty) {
+          eventsList.innerHTML = '<p class="col-span-full text-center text-gray-500">No events available.</p>';
+          return;
+        }
+
+        eventsList.innerHTML = '';
+
+        querySnapshot.forEach((doc) => {
+          const event = doc.data();
+
+          const eventDate = event.date ? new Date(event.date.seconds * 1000) : null;
+          const formattedDate = eventDate ? eventDate.toLocaleDateString() : 'No date';
+
+          const eventCard = document.createElement('div');
+          eventCard.className = 'bg-white rounded-lg shadow p-4 flex flex-col';
+
+          eventCard.innerHTML = `
+            <img src="${event.imageUrl || 'https://via.placeholder.com/400x200?text=No+Image'}" alt="${event.title}" class="rounded-md mb-4 object-cover h-48 w-full" />
+            <h3 class="text-xl font-semibold mb-2">${event.title}</h3>
+            <p class="text-gray-600 mb-1"><strong>Date:</strong> ${formattedDate}</p>
+            <p class="text-gray-600 mb-1"><strong>Location:</strong> ${event.location || 'Unknown'}</p>
+            <p class="text-gray-700 flex-grow">${event.description?.substring(0, 100)}...</p>
+            <a href="event-details.html?id=${doc.id}" class="mt-4 inline-block text-blue-600 hover:underline">View Details</a>
+          `;
+
+          eventsList.appendChild(eventCard);
+        });
+      } catch (error) {
+        eventsList.innerHTML = `<p class="col-span-full text-center text-red-500">Error loading events: ${error.message}</p>`;
+      }
+    }
+
+    fetchEvents();
+  </script>
+
+</body>
+</html>
