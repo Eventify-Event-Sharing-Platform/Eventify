@@ -1,4 +1,4 @@
-import { db } from './firebase.js';  // تأكد من مسار الاستيراد صحيح
+import { db } from './firebase.js';  
 import { collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
 async function fetchEvents() {
@@ -16,9 +16,9 @@ async function fetchEvents() {
 
     querySnapshot.forEach((doc) => {
       const event = doc.data();
-      console.log('Event data:', event); // لمراقبة البيانات في الكونسول
+      console.log('Event data:', event); 
 
-      // تحقق من وجود التاريخ وخصائصه بأمان
+
       const seconds = event?.date?.seconds ?? null;
       const eventDate = seconds ? new Date(seconds * 1000) : null;
       const formattedDate = eventDate ? eventDate.toLocaleDateString() : 'No date';
@@ -28,7 +28,7 @@ async function fetchEvents() {
       const description = event?.description ? event.description.substring(0, 100) + '...' : 'No description';
       const imageUrl = event?.imageUrl || 'https://via.placeholder.com/400x200?text=No+Image';
 
-      // أنشئ بطاقة الحدث
+
       const eventCard = document.createElement('div');
       eventCard.className = 'bg-white rounded-lg shadow p-4 flex flex-col';
 
@@ -50,5 +50,5 @@ async function fetchEvents() {
   }
 }
 
-// ناد الدالة عند تحميل الصفحة
+
 fetchEvents();
