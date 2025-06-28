@@ -5,52 +5,182 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Events | Eventify</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script type="module" src="/scripts/firebase.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+  <style>
+    .glass-effect {
+      backdrop-filter: blur(10px);
+      background: rgba(255, 255, 255, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    .event-card {
+      transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+      transform: translateY(20px);
+      opacity: 0;
+      animation: fadeInUp 0.8s forwards;
+    }
+    .event-card:hover {
+      transform: translateY(-10px) scale(1.02) !important;
+      box-shadow: 0 15px 30px rgba(0, 102, 204, 0.3);
+    }
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .loading-dots {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100px;
+    }
+    .loading-dots span {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background-color: #3b82f6;
+      margin: 0 5px;
+      animation: bounce 1.4s infinite ease-in-out;
+    }
+    .loading-dots span:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+    .loading-dots span:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+    @keyframes bounce {
+      0%, 80%, 100% { 
+        transform: translateY(0);
+      }
+      40% {
+        transform: translateY(-20px);
+      }
+    }
+    .filter-btn {
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .filter-btn::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: currentColor;
+      transform: scaleX(0);
+      transform-origin: right;
+      transition: transform 0.3s ease;
+    }
+    .filter-btn:hover::after {
+      transform: scaleX(1);
+      transform-origin: left;
+    }
+    .active-filter {
+      background-color: #3b82f6 !important;
+      color: white !important;
+      box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
+    }
+  </style>
 </head>
-<body class="bg-gray-100 min-h-screen flex flex-col">
+<body class="bg-gradient-to-br from-pink-100 via-sky-100 to-violet-100 text-gray-800 min-h-screen flex flex-col">
 
-  <!-- Navbar -->
-  <nav class="bg-white shadow p-4 flex justify-between items-center">
-    <div class="text-2xl font-bold">Eventify</div>
-    <ul class="flex space-x-6 items-center">
-      <li><a href="index.html" class="hover:underline">Home</a></li>
-      <li><a href="about.html" class="hover:underline">About</a></li>
-      <li><a href="events.html" class="underline font-semibold">Events</a></li>
-      <li><a href="create-event.html" class="hover:underline">Create Event</a></li>
-      <li><a href="login.html" id="loginLink" class="hover:underline">Login</a></li>
-      <li><a href="register.html" id="registerLink" class="hover:underline">Register</a></li>
-      <li class="hidden" id="logoutBtn"><button class="text-red-500">Logout</button></li>
+
+  <nav class="bg-white/50 backdrop-blur-md border-b border-white/30 p-4 flex justify-between items-center shadow-md fixed top-0 w-full z-50 rounded-b-xl animate__animated animate__fadeInDown">
+    <div class="text-2xl font-bold text-gray-800">Eventify</div>
+    <ul class="flex space-x-6 items-center text-gray-700 font-medium">
+      <li><a href="index.html" class="text-sky-600 hover:text-sky-700 transition-colors">Home</a></li>
+      <li><a href="about.html" class="hover:text-sky-600 transition-colors">About</a></li>
+      <li><a href="events.html" class="hover:text-sky-600 transition-colors">Events</a></li>
+      <li><a href="contact.html" class="hover:text-sky-600 transition-colors">Contact</a></li>
+      <li><a href="create-event.html" class="bg-gradient-to-r from-sky-500 to-blue-600 text-white px-4 py-2 rounded-full hover:shadow-lg transition-all duration-300 hover:scale-105 transform hover:-translate-y-1">Create Event</a></li>
+      <li><a href="login.html" class="hover:text-sky-600 transition-colors">Login</a></li>
     </ul>
-    <div id="userDisplay" class="text-gray-700 ml-4"></div>
   </nav>
 
-  <!-- Main Content -->
-  <main class="flex-grow container mx-auto p-6 max-w-6xl">
-    <h1 class="text-4xl font-bold mb-8 text-center text-gray-800">All Events</h1>
 
-    <div id="eventsList" class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <!-- Events will be loaded here -->
-    </div>
+  <main class="flex-grow container mx-auto px-6 pt-32 pb-16">
+    <h1 class="text-4xl font-bold mb-4 text-center animate__animated animate__fadeIn">All Events</h1>
+    <p class="text-center mb-10 text-lg text-gray-600 max-w-2xl mx-auto animate__animated animate__fadeIn animate__delay-1s">
+      Browse all upcoming and past events.
+    </p>
+
+    <section class="animate__animated animate__fadeIn animate__delay-1s">
+      <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+        <h2 class="text-2xl font-semibold text-gray-800">Events List</h2>
+        <div class="flex space-x-2 md:space-x-4">
+          <button id="filterAll" class="filter-btn px-4 py-2 rounded-full bg-sky-500 text-white active-filter">All</button>
+          <button id="filterUpcoming" class="filter-btn px-4 py-2 rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300">Upcoming</button>
+          <button id="filterPast" class="filter-btn px-4 py-2 rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300">Past</button>
+        </div>
+      </div>
+      
+      <div id="eventsList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div class="col-span-full flex justify-center">
+          <div class="loading-dots">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
+
+
+ <footer class="bg-white/50 backdrop-blur-md border-t border-white/30 text-center py-4 text-gray-600 animate__animated animate__fadeInUp">
+    <div class="container mx-auto px-6">
+      <div class="flex flex-col md:flex-row justify-between items-center">
+        <div class="text-xl font-bold text-gray-800 mb-4 md:mb-0">Eventify</div>
+        <div class="flex space-x-6 mb-4 md:mb-0">
+          <a href="#" class="hover:text-sky-600 transition-colors transform hover:scale-110">
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/>
+            </svg>
+          </a>
+          <a href="#" class="hover:text-sky-600 transition-colors transform hover:scale-110">
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84"/>
+            </svg>
+          </a>
+          <a href="#" class="hover:text-sky-600 transition-colors transform hover:scale-110">
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06-4.123 0-.427-.013-.903-.06-1.38-.065-.578-.238-1.155-.534-1.682-.296-.527-.719-.973-1.242-1.312-.527-.334-1.086-.494-1.681-.525-.43-.03-.913-.044-1.38-.044h-.08c-2.643 0-2.987.012-4.043.06-1.064.049-1.791.219-2.427.465a4.902 4.902 0 01-1.772 1.153 4.902 4.902 0 01-1.153 1.772c-.247.636-.416 1.363-.465 2.427-.047 1.024-.06 1.379-.06 3.808v.027c0 2.43.013 2.784.06 3.808.049 1.064.218 1.791.465 2.427a4.902 4.902 0 011.153 1.772 4.902 4.902 0 011.772 1.153c.636.247 1.363.416 2.427.465 1.067.048 1.407.06 4.123.06h.08c2.643 0 2.987-.012 4.043-.06 1.064-.049 1.791-.218 2.427-.465a4.902 4.902 0 011.772-1.153 4.902 4.902 0 011.153-1.772c.247-.636.416-1.363.465-2.427.048-1.067.06-1.407.06-4.123v-.08c0-2.643-.012-2.987-.06-4.043-.049-1.064-.218-1.791-.465-2.427a4.902 4.902 0 01-1.153-1.772 4.902 4.902 0 01-1.772-1.153c-.636-.247-1.363-.416-2.427-.465-1.024-.047-1.379-.06-3.808-.06h-.027zm0-2c-2.572 0-2.96.01-4.015.059-.975.045-1.504.207-2.038.404-.55.207-1.02.477-1.45.907-.43.43-.7.9-.907 1.45-.197.534-.359 1.063-.404 2.038-.05 1.055-.06 1.443-.06 4.015s.01 2.96.059 4.015c.045.975.207 1.504.404 2.038.207.55.477 1.02.907 1.45.43.43.9.7 1.45.907.534.197 1.063.359 2.038.404 1.055.05 1.443.06 4.015.06s2.96-.01 4.015-.059c.975-.045 1.504-.207 2.038-.404.55-.207 1.02-.477 1.45-.907.43-.43.7-.9.907-1.45.197-.534.359-1.063.404-2.038.05-1.055.06-1.443.06-4.015s-.01-2.96-.059-4.015c-.045-.975-.207-1.504-.404-2.038-.207-.55-.477-1.02-.907-1.45-.43-.43-.9-.7-1.45-.907-.534-.197-1.063-.359-2.038-.404-1.055-.05-1.443-.06-4.015-.06zm-3.27 8.01c.711 0 1.29.579 1.29 1.29s-.579 1.29-1.29 1.29-1.29-.579-1.29-1.29.579-1.29 1.29-1.29zm6.58 0c.711 0 1.29.579 1.29 1.29s-.579 1.29-1.29 1.29-1.29-.579-1.29-1.29.579-1.29 1.29-1.29zm-3.29 3.29c0 .711.579 1.29 1.29 1.29s1.29-.579 1.29-1.29-.579-1.29-1.29-1.29-1.29.579-1.29 1.29z"/>
+            </svg>
+          </a>
+        </div>
+        <div class="text-sm">
+          &copy; 2025 Eventify. All rights reserved.
+        </div>
+      </div>
+    </div>
+  </footer>
+
 
   <script type="module">
     import { auth, db } from './scripts/firebase.js';
-    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
-    import { collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+    import { onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js';
+    import { collection, getDocs, query, orderBy } from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js';
+
 
     const userDisplay = document.getElementById('userDisplay');
     const loginLink = document.getElementById('loginLink');
     const registerLink = document.getElementById('registerLink');
     const logoutBtn = document.getElementById('logoutBtn');
     const eventsList = document.getElementById('eventsList');
+    const filterAll = document.getElementById('filterAll');
+    const filterUpcoming = document.getElementById('filterUpcoming');
+    const filterPast = document.getElementById('filterPast');
 
-    // Handle auth state
+
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         loginLink.style.display = 'none';
         registerLink.style.display = 'none';
         logoutBtn.classList.remove('hidden');
-
-        // Optionally get user info from Firestore if stored
         userDisplay.textContent = `Hello, ${user.email}`;
       } else {
         userDisplay.textContent = '';
@@ -60,50 +190,180 @@
       }
     });
 
+
     logoutBtn.addEventListener('click', async () => {
-      await signOut(auth);
-      window.location.href = 'index.html';
+      try {
+        await signOut(auth);
+        window.location.href = 'login.html';
+      } catch (error) {
+        console.error('Logout error:', error);
+      }
     });
 
-    async function fetchEvents() {
-      try {
-        const q = query(collection(db, 'events'), orderBy('date', 'asc'));
-        const querySnapshot = await getDocs(q);
 
-        if (querySnapshot.empty) {
-          eventsList.innerHTML = '<p class="col-span-full text-center text-gray-500">No events available.</p>';
-          return;
-        }
+    let allEvents = [];
 
-        eventsList.innerHTML = '';
+    function filterEvents(type) {
+      const now = new Date();
+      let filteredEvents = [];
 
-        querySnapshot.forEach((doc) => {
-          const event = doc.data();
+      switch(type) {
+        case 'upcoming':
+          filteredEvents = allEvents.filter(event => {
+            const eventDate = event.date?.seconds ? new Date(event.date.seconds * 1000) : null;
+            return eventDate && eventDate > now;
+          });
+          break;
+        case 'past':
+          filteredEvents = allEvents.filter(event => {
+            const eventDate = event.date?.seconds ? new Date(event.date.seconds * 1000) : null;
+            return eventDate && eventDate <= now;
+          });
+          break;
+        default:
+          filteredEvents = [...allEvents];
+      }
 
-          const eventDate = event.date ? new Date(event.date.seconds * 1000) : null;
-          const formattedDate = eventDate ? eventDate.toLocaleDateString() : 'No date';
+      renderEvents(filteredEvents);
+      updateFilterButtons(type);
+    }
 
-          const eventCard = document.createElement('div');
-          eventCard.className = 'bg-white rounded-lg shadow p-4 flex flex-col';
+    function updateFilterButtons(activeFilter) {
+      // Remove active class from all buttons
+      filterAll.classList.remove('active-filter');
+      filterUpcoming.classList.remove('active-filter');
+      filterPast.classList.remove('active-filter');
+      
+      // Reset all buttons to default state
+      filterAll.className = 'filter-btn px-4 py-2 rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300';
+      filterUpcoming.className = 'filter-btn px-4 py-2 rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300';
+      filterPast.className = 'filter-btn px-4 py-2 rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300';
 
-          eventCard.innerHTML = `
-            <img src="${event.imageUrl || 'https://via.placeholder.com/400x200?text=No+Image'}" alt="${event.title}" class="rounded-md mb-4 object-cover h-48 w-full" />
-            <h3 class="text-xl font-semibold mb-2">${event.title}</h3>
-            <p class="text-gray-600 mb-1"><strong>Date:</strong> ${formattedDate}</p>
-            <p class="text-gray-600 mb-1"><strong>Location:</strong> ${event.location || 'Unknown'}</p>
-            <p class="text-gray-700 flex-grow">${event.description?.substring(0, 100)}...</p>
-            <a href="event-details.html?id=${doc.id}" class="mt-4 inline-block text-blue-600 hover:underline">View Details</a>
-          `;
-
-          eventsList.appendChild(eventCard);
-        });
-      } catch (error) {
-        eventsList.innerHTML = `<p class="col-span-full text-center text-red-500">Error loading events: ${error.message}</p>`;
+      // Add active class to the selected button
+      if (activeFilter === 'all') {
+        filterAll.className = 'filter-btn px-4 py-2 rounded-full bg-sky-500 text-white active-filter';
+      } else if (activeFilter === 'upcoming') {
+        filterUpcoming.className = 'filter-btn px-4 py-2 rounded-full bg-sky-500 text-white active-filter';
+      } else if (activeFilter === 'past') {
+        filterPast.className = 'filter-btn px-4 py-2 rounded-full bg-sky-500 text-white active-filter';
       }
     }
 
-    fetchEvents();
-  </script>
 
+    async function fetchEvents() {
+      try {
+        // Show loading animation
+        eventsList.innerHTML = `
+          <div class="col-span-full flex justify-center">
+            <div class="loading-dots">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+          </div>
+        `;
+
+        const eventsQuery = query(collection(db, 'events'), orderBy('date', 'asc'));
+        const querySnapshot = await getDocs(eventsQuery);
+        
+        const localEvents = JSON.parse(localStorage.getItem('events')) || [];
+        
+        allEvents = [];
+        
+        querySnapshot.forEach((doc) => {
+          allEvents.push({
+            id: doc.id,
+            ...doc.data(),
+            source: 'firebase'
+          });
+        });
+        
+        localEvents.forEach(event => {
+          allEvents.push({
+            ...event,
+            source: 'local'
+          });
+        });
+
+        if (allEvents.length === 0) {
+          eventsList.innerHTML = '<p class="col-span-full text-center text-gray-500 animate__animated animate__fadeIn">No events available.</p>';
+          return;
+        }
+
+        // Add delay before showing events for better UX
+        setTimeout(() => {
+          filterEvents('all');
+        }, 500);
+        
+      } catch (error) {
+        console.error('Error loading events:', error);
+        eventsList.innerHTML = `
+          <div class="col-span-full text-center text-red-500 animate__animated animate__fadeIn">
+            Error loading events. Please try again later.
+          </div>
+        `;
+      }
+    }
+
+    function renderEvents(events) {
+      eventsList.innerHTML = '';
+      
+      if (events.length === 0) {
+        eventsList.innerHTML = '<p class="col-span-full text-center text-gray-500 animate__animated animate__fadeIn">No events match your filter.</p>';
+        return;
+      }
+
+      events.forEach((event, index) => {
+        let eventDate, formattedDate;
+        
+        if (event.source === 'firebase') {
+          eventDate = event.date?.seconds ? new Date(event.date.seconds * 1000) : null;
+        } else {
+          eventDate = new Date(event.date);
+        }
+        
+        formattedDate = eventDate ? eventDate.toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        }) : 'Date not specified';
+
+        // Add staggered animation delay
+        const delay = (index % 6) * 0.1;
+        
+        const eventCard = `
+          <div class="event-card bg-white/70 backdrop-blur-xl rounded-xl p-5 shadow-xl border border-white/30 flex flex-col h-full" 
+               style="animation-delay: ${delay}s">
+            <img src="${event.imageUrl || event.image || 'https://via.placeholder.com/400x200?text=No+Image'}" 
+                 alt="${event.title || event.name || 'Event image'}" 
+                 class="rounded-lg mb-4 object-cover h-48 w-full hover:scale-105 transition-transform duration-300">
+            <h3 class="text-xl font-bold mb-2">${event.title || event.name || 'Untitled Event'}</h3>
+            <p class="text-gray-700 mb-1"><strong>Date:</strong> ${formattedDate}</p>
+            <p class="text-gray-700 mb-1"><strong>Location:</strong> ${event.location || 'Location not specified'}</p>
+            <p class="text-gray-600 mb-4 flex-grow">${(event.description || '').substring(0, 100)}...</p>
+            <a href="event-details.html?id=${event.id || ''}" 
+               class="mt-auto text-sky-600 hover:text-sky-700 font-medium transition-colors inline-flex items-center group">
+              View Details
+              <svg class="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+              </svg>
+            </a>
+          </div>
+        `;
+
+        eventsList.insertAdjacentHTML('beforeend', eventCard);
+      });
+    }
+
+
+    filterAll.addEventListener('click', () => filterEvents('all'));
+    filterUpcoming.addEventListener('click', () => filterEvents('upcoming'));
+    filterPast.addEventListener('click', () => filterEvents('past'));
+
+
+    document.addEventListener('DOMContentLoaded', fetchEvents);
+  </script>
 </body>
 </html>

@@ -1,54 +1,286 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>About | Eventify</title>
-  <script type="module" src="/scripts/firebase.js"></script>
-  <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100 min-h-screen flex flex-col">
 
-  <!-- Navbar -->
-  <nav class="bg-white shadow p-4 flex justify-between items-center">
-    <div class="text-2xl font-bold">Eventify</div>
-    <ul class="flex space-x-6 items-center">
-      <li><a href="index.html" class="hover:underline">Home</a></li>
-      <li><a href="about.html" class="underline font-semibold">About</a></li>
-      <li><a href="events.html" class="hover:underline">Events</a></li>
-      <li><a href="create-event.html" class="hover:underline">Create Event</a></li>
-      <li><a href="login.html" class="hover:underline">Login</a></li>
-      <li><a href="register.html" class="hover:underline">Register</a></li>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About Us - Eventify</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          animation: {
+            'fade-in': 'fadeIn 0.8s ease-in-out',
+            'slide-up': 'slideUp 0.8s ease-out',
+            'float': 'float 3s ease-in-out infinite',
+            'pulse-glow': 'pulseGlow 2s ease-in-out infinite',
+          },
+          keyframes: {
+            fadeIn: {
+              '0%': { opacity: '0', transform: 'translateY(20px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' }
+            },
+            slideUp: {
+              '0%': { opacity: '0', transform: 'translateY(40px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' }
+            },
+            float: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-10px)' }
+            },
+            pulseGlow: {
+              '0%, 100%': { boxShadow: '0 0 20px rgba(14, 165, 233, 0.4)' },
+              '50%': { boxShadow: '0 0 30px rgba(14, 165, 233, 0.8)' }
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .gradient-bg {
+      background: linear-gradient(135deg, #7dd3fc 0%, #93c5fd 100%);
+    }
+    .card-hover {
+      transition: all 0.3s ease;
+    }
+    .card-hover:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    }
+    .glass-effect {
+      backdrop-filter: blur(10px);
+      background: rgba(255, 255, 255, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    .hero-pattern {
+      background-image: 
+        radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 75% 75%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+    }
+  </style>
+</head>
+
+<body class="bg-gradient-to-br from-pink-100 via-sky-100 to-violet-100 text-gray-800 min-h-screen">
+
+  <nav class="bg-white/50 backdrop-blur-md border-b border-white/30 p-4 flex justify-between items-center shadow-md fixed top-0 w-full z-50 rounded-b-xl">
+    <div class="text-2xl font-bold text-gray-800">Eventify</div>
+    <ul class="flex space-x-6 items-center text-gray-700 font-medium">
+      <li><a href="index.html" class="hover:text-sky-600">Home</a></li>
+      <li><a href="about.html" class="text-sky-600">About</a></li>
+      <li><a href="events.html" class="hover:text-sky-600">Events</a></li>
+      <li><a href="contact.html" class="hover:text-sky-600">Contact</a></li>
+      <li><a href="create-event.html" class="bg-gradient-to-r from-sky-500 to-blue-600 text-white px-4 py-2 rounded-full hover:shadow-lg transition-all duration-300 hover:scale-105">Create Event</a></li>
+      <li><a href="login.html" class="hover:text-sky-600">Login</a></li>
     </ul>
   </nav>
 
-  <!-- Main Content -->
-  <main class="flex-grow container mx-auto p-6 max-w-4xl">
-    <h1 class="text-4xl font-bold mb-8 text-center text-gray-800">About Eventify</h1>
 
-    <section class="bg-white rounded-lg shadow p-6 mb-6">
-      <h2 class="text-2xl font-semibold mb-4">What is Eventify?</h2>
-      <p class="text-gray-700 leading-relaxed">
-        Eventify is a platform where students and users can explore, create, and share events happening around their community. 
-        Whether you want to find new activities, share your own event, or connect with others, Eventify makes it easy and fun.
+  <header class="relative pt-32 pb-24 overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-br from-pink-100 via-sky-100 to-violet-100"></div>
+    <div class="absolute top-10 left-10 w-72 h-72 bg-sky-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float"></div>
+    <div class="absolute top-20 right-10 w-72 h-72 bg-pink-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float" style="animation-delay: 1s;"></div>
+    <div class="absolute bottom-10 left-1/2 w-72 h-72 bg-violet-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float" style="animation-delay: 2s;"></div>
+    
+    <div class="relative container mx-auto text-center pt-16 animate-fade-in">
+      <h1 class="text-6xl md:text-7xl font-bold text-gray-800 mb-6 leading-tight">
+        About <span class="bg-gradient-to-r from-sky-500 to-blue-600 bg-clip-text text-transparent">Eventify</span>
+      </h1>
+      <p class="text-xl md:text-2xl text-gray-700 max-w-3xl mx-auto leading-relaxed">
+        Where extraordinary events come to life and unforgettable memories are made
       </p>
+      <div class="mt-12 flex justify-center gap-4">
+        <div class="w-2 h-2 bg-gray-600/60 rounded-full animate-pulse"></div>
+        <div class="w-2 h-2 bg-gray-600/60 rounded-full animate-pulse" style="animation-delay: 0.2s;"></div>
+        <div class="w-2 h-2 bg-gray-600/60 rounded-full animate-pulse" style="animation-delay: 0.4s;"></div>
+      </div>
+    </div>
+  </header>
+
+
+  <main class="container mx-auto px-6 -mt-16 relative z-10">
+
+    <section class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-20">
+
+      <div class="bg-white/70 backdrop-blur-xl rounded-xl p-8 shadow-xl border border-white/30 animate-slide-up">
+        <h2 class="text-4xl font-bold bg-gradient-to-r from-sky-500 to-blue-600 bg-clip-text text-transparent mb-6">
+          What We Do
+        </h2>
+        <p class="text-lg text-gray-600 leading-relaxed mb-4">
+          Eventify is your premier platform for discovering and creating extraordinary events. Whether you're organizing an intimate gathering, a corporate conference, or a massive festival, we provide the tools and community to make it exceptional.
+        </p>
+        <p class="text-lg text-gray-600 leading-relaxed mb-8">
+          Join thousands of event creators and attendees who trust Eventify to bring their visions to life and discover experiences that inspire, connect, and delight.
+        </p>
+        <button
+          onclick="learnMore()"
+          class="group relative px-8 py-4 bg-gradient-to-r from-sky-500 to-blue-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 overflow-hidden">
+          <span class="relative z-10">Learn More</span>
+          <div class="absolute inset-0 bg-gradient-to-r from-blue-600 to-sky-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+        </button>
+      </div>
+      
+
+      <div class="flex justify-center animate-slide-up" style="animation-delay: 0.2s;">
+        <div class="relative group">
+          <div class="absolute -inset-4 bg-gradient-to-r from-sky-500 to-blue-600 rounded-2xl blur opacity-25 group-hover:opacity-40 transition duration-1000"></div>
+          <div class="relative w-96 h-64 bg-gradient-to-br from-sky-100 to-blue-100 rounded-2xl overflow-hidden shadow-2xl">
+            <div class="absolute inset-0 bg-gradient-to-br from-sky-400/20 to-blue-400/20"></div>
+            <div class="absolute top-4 left-4 w-6 h-6 bg-sky-500 rounded-full animate-pulse"></div>
+            <div class="absolute top-4 right-4 w-4 h-4 bg-blue-500 rounded-full animate-pulse" style="animation-delay: 0.5s;"></div>
+            <div class="absolute bottom-4 left-4 w-8 h-8 bg-violet-500 rounded-full animate-pulse" style="animation-delay: 1s;"></div>
+            <div class="flex items-center justify-center h-full">
+              <div class="text-center">
+                <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center mb-4 mx-auto shadow-lg animate-float">
+                  <svg class="w-10 h-10 text-sky-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                </div>
+                <h3 class="text-xl font-bold text-gray-700">Events Made Simple</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
 
-    <section class="bg-white rounded-lg shadow p-6 mb-6">
-      <h2 class="text-2xl font-semibold mb-4">Create and Share</h2>
-      <p class="text-gray-700 leading-relaxed">
-        Users can register and log in to create new events by filling out a simple form. Upload images, set event details like date and location, 
-        and share it with everyone on the platform. All events are publicly listed for others to discover.
+
+    <section class="bg-white/70 backdrop-blur-xl rounded-xl p-8 shadow-xl border border-white/30 animate-slide-up" style="animation-delay: 0.4s;">
+      <h3 class="text-4xl font-bold text-center bg-gradient-to-r from-sky-500 to-blue-600 bg-clip-text text-transparent mb-4">
+        Why Choose Eventify?
+      </h3>
+      <p class="text-center text-gray-600 text-lg mb-12 max-w-2xl mx-auto">
+        Discover what makes us the preferred choice for event creators worldwide
       </p>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="text-center group card-hover p-6 rounded-2xl hover:bg-gradient-to-br hover:from-sky-50 hover:to-blue-50 transition-all duration-300">
+          <div class="relative mx-auto mb-6 w-20 h-20 bg-gradient-to-br from-sky-500 to-blue-500 rounded-2xl flex items-center justify-center shadow-lg group-hover:animate-pulse-glow">
+            <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+          </div>
+          <h4 class="text-xl font-bold text-gray-800 mb-3">Lightning Fast</h4>
+          <p class="text-gray-600 leading-relaxed">Create stunning events in minutes with our intuitive drag-and-drop interface and smart templates.</p>
+        </div>
+        
+        <div class="text-center group card-hover p-6 rounded-2xl hover:bg-gradient-to-br hover:from-sky-50 hover:to-blue-50 transition-all duration-300">
+          <div class="relative mx-auto mb-6 w-20 h-20 bg-gradient-to-br from-blue-500 to-violet-500 rounded-2xl flex items-center justify-center shadow-lg group-hover:animate-pulse-glow">
+            <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+            </svg>
+          </div>
+          <h4 class="text-xl font-bold text-gray-800 mb-3">Global Community</h4>
+          <p class="text-gray-600 leading-relaxed">Connect with millions of event enthusiasts, creators, and industry professionals worldwide.</p>
+        </div>
+        
+        <div class="text-center group card-hover p-6 rounded-2xl hover:bg-gradient-to-br hover:from-sky-50 hover:to-blue-50 transition-all duration-300">
+          <div class="relative mx-auto mb-6 w-20 h-20 bg-gradient-to-br from-green-500 to-teal-500 rounded-2xl flex items-center justify-center shadow-lg group-hover:animate-pulse-glow">
+            <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+            </svg>
+          </div>
+          <h4 class="text-xl font-bold text-gray-800 mb-3">Enterprise Security</h4>
+          <p class="text-gray-600 leading-relaxed">Bank-level security with end-to-end encryption ensures your events and data remain protected.</p>
+        </div>
+      </div>
     </section>
 
-    <section class="bg-white rounded-lg shadow p-6">
-      <h2 class="text-2xl font-semibold mb-4">Join Our Community</h2>
-      <p class="text-gray-700 leading-relaxed">
-        Eventify is more than just a website — it’s a community hub for students and event enthusiasts. Stay updated, meet new people, and make the most of every event.
-      </p>
+
+    <section class="mt-20 grid grid-cols-2 md:grid-cols-4 gap-8 animate-slide-up" style="animation-delay: 0.6s;">
+      <div class="text-center bg-white/70 backdrop-blur-xl rounded-xl p-6 shadow-xl border border-white/30">
+        <div class="text-3xl font-bold bg-gradient-to-r from-sky-500 to-blue-600 bg-clip-text text-transparent">1M+</div>
+        <div class="text-gray-600 font-medium">Events Created</div>
+      </div>
+      <div class="text-center bg-white/70 backdrop-blur-xl rounded-xl p-6 shadow-xl border border-white/30">
+        <div class="text-3xl font-bold bg-gradient-to-r from-sky-500 to-blue-600 bg-clip-text text-transparent">5M+</div>
+        <div class="text-gray-600 font-medium">Happy Users</div>
+      </div>
+      <div class="text-center bg-white/70 backdrop-blur-xl rounded-xl p-6 shadow-xl border border-white/30">
+        <div class="text-3xl font-bold bg-gradient-to-r from-sky-500 to-blue-600 bg-clip-text text-transparent">150+</div>
+        <div class="text-gray-600 font-medium">Countries</div>
+      </div>
+      <div class="text-center bg-white/70 backdrop-blur-xl rounded-xl p-6 shadow-xl border border-white/30">
+        <div class="text-3xl font-bold bg-gradient-to-r from-sky-500 to-blue-600 bg-clip-text text-transparent">99.9%</div>
+        <div class="text-gray-600 font-medium">Uptime</div>
+      </div>
     </section>
   </main>
 
+
+ <footer class="bg-white/50 backdrop-blur-md border-t border-white/30 text-center py-4 text-gray-600">
+    <div class="container mx-auto px-6">
+      <div class="flex flex-col md:flex-row justify-between items-center">
+        <div class="text-xl font-bold text-gray-800 mb-4 md:mb-0">Eventify</div>
+        <div class="flex space-x-6 mb-4 md:mb-0">
+          <a href="#" class="hover:text-sky-600 transition-colors">
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/>
+            </svg>
+          </a>
+          <a href="#" class="hover:text-sky-600 transition-colors">
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84"/>
+            </svg>
+          </a>
+          <a href="#" class="hover:text-sky-600 transition-colors">
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06-4.123 0-.427-.013-.903-.06-1.38-.065-.578-.238-1.155-.534-1.682-.296-.527-.719-.973-1.242-1.312-.527-.334-1.086-.494-1.681-.525-.43-.03-.913-.044-1.38-.044h-.08c-2.643 0-2.987.012-4.043.06-1.064.049-1.791.219-2.427.465a4.902 4.902 0 01-1.772 1.153 4.902 4.902 0 01-1.153 1.772c-.247.636-.416 1.363-.465 2.427-.047 1.024-.06 1.379-.06 3.808v.027c0 2.43.013 2.784.06 3.808.049 1.064.218 1.791.465 2.427a4.902 4.902 0 011.153 1.772 4.902 4.902 0 011.772 1.153c.636.247 1.363.416 2.427.465 1.067.048 1.407.06 4.123.06h.08c2.643 0 2.987-.012 4.043-.06 1.064-.049 1.791-.218 2.427-.465a4.902 4.902 0 011.772-1.153 4.902 4.902 0 011.153-1.772c.247-.636.416-1.363.465-2.427.048-1.067.06-1.407.06-4.123v-.08c0-2.643-.012-2.987-.06-4.043-.049-1.064-.218-1.791-.465-2.427a4.902 4.902 0 01-1.153-1.772 4.902 4.902 0 01-1.772-1.153c-.636-.247-1.363-.416-2.427-.465-1.024-.047-1.379-.06-3.808-.06h-.027zm0-2c-2.572 0-2.96.01-4.015.059-.975.045-1.504.207-2.038.404-.55.207-1.02.477-1.45.907-.43.43-.7.9-.907 1.45-.197.534-.359 1.063-.404 2.038-.05 1.055-.06 1.443-.06 4.015s.01 2.96.059 4.015c.045.975.207 1.504.404 2.038.207.55.477 1.02.907 1.45.43.43.9.7 1.45.907.534.197 1.063.359 2.038.404 1.055.05 1.443.06 4.015.06s2.96-.01 4.015-.059c.975-.045 1.504-.207 2.038-.404.55-.207 1.02-.477 1.45-.907.43-.43.7-.9.907-1.45.197-.534.359-1.063.404-2.038.05-1.055.06-1.443.06-4.015s-.01-2.96-.059-4.015c-.045-.975-.207-1.504-.404-2.038-.207-.55-.477-1.02-.907-1.45-.43-.43-.9-.7-1.45-.907-.534-.197-1.063-.359-2.038-.404-1.055-.05-1.443-.06-4.015-.06zm-3.27 8.01c.711 0 1.29.579 1.29 1.29s-.579 1.29-1.29 1.29-1.29-.579-1.29-1.29.579-1.29 1.29-1.29zm6.58 0c.711 0 1.29.579 1.29 1.29s-.579 1.29-1.29 1.29-1.29-.579-1.29-1.29.579-1.29 1.29-1.29zm-3.29 3.29c0 .711.579 1.29 1.29 1.29s1.29-.579 1.29-1.29-.579-1.29-1.29-1.29-1.29.579-1.29 1.29z"/>
+            </svg>
+          </a>
+        </div>
+        <div class="text-sm">
+          &copy; 2025 Eventify. All rights reserved.
+        </div>
+      </div>
+    </div>
+  </footer>
+
+
+  <script>
+    function learnMore() {
+
+      const modal = document.createElement('div');
+      modal.className = 'fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in';
+      modal.innerHTML = `
+        <div class="bg-white rounded-2xl p-8 max-w-md mx-4 shadow-2xl">
+          <div class="text-center">
+            <div class="w-16 h-16 bg-gradient-to-r from-sky-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
+              </svg>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-800 mb-4">Coming Soon!</h3>
+            <p class="text-gray-600 mb-6">We're working on exciting new features that will revolutionize how you create and manage events. Stay tuned!</p>
+            <button onclick="this.parentElement.parentElement.parentElement.remove()" class="px-6 py-3 bg-gradient-to-r from-sky-500 to-blue-600 text-white rounded-lg font-semibold hover:shadow-lg transition-all duration-300">
+              Got it!
+            </button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+    }
+
+
+    window.addEventListener('load', () => {
+      const elements = document.querySelectorAll('.animate-slide-up');
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.style.opacity = '1';
+            entry.target.style.transform = 'translateY(0)';
+          }
+        });
+      });
+
+      elements.forEach(el => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(40px)';
+        el.style.transition = 'all 0.8s ease-out';
+        observer.observe(el);
+      });
+    });
+  </script>
 </body>
 </html>

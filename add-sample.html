@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Add Sample Events | Eventify</title>
+  <script type="module">
+    import { addSampleEvents } from './scripts/firebase.js';
+
+    async function addEvents() {
+      try {
+        await addSampleEvents();
+        alert('Sample events added to Firestore!');
+      } catch (error) {
+        alert('Error adding events: ' + error.message);
+        console.error(error);
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('addBtn').addEventListener('click', addEvents);
+    });
+  </script>
+</head>
+<body class="bg-gray-900 text-white flex flex-col items-center justify-center min-h-screen p-6">
+  <h1 class="text-3xl font-bold mb-6">Add Sample Events to Firestore</h1>
+  <button id="addBtn" class="px-6 py-3 bg-blue-600 rounded hover:bg-blue-700 transition">
+    Add Sample Events
+  </button>
+</body>
+</html>
